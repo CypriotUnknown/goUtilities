@@ -1,4 +1,4 @@
-package utilities
+package main
 
 func FindInSlice[X any, T []X](slice T, condition func(object X) bool) *X {
 
