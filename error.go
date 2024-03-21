@@ -3,36 +3,47 @@ package utilities
 import "log"
 
 type jsonError struct {
-	Err     error  `json:"err"`
-	Message string `json:"message,omitempty"`
+	Err         error  `json:"err"`
+	Message     string `json:"message,omitempty"`
+	jsonLogging bool   `json:"-"`
 }
 
-func HandleError(err error, message string, fatal bool) *jsonError {
-	if err != nil {
-		if jErr, ok := err.(jsonError); ok {
-			msgIsDifferent := (jErr.Message != message) && message != ""
+type ErrorProperties struct {
+	Err         error  `json:"err"`
+	Message     string `json:"message"`
+	Fatal       bool   `json:"fatal"`
+	JSONLogging bool   `json:"json_logging"`
+}
 
-			if fatal {
+func HandleError(properties ErrorProperties) *jsonError {
+	if properties.Err != nil {
+
+		if jErr, ok := properties.Err.(jsonError); ok {
+			jErr.jsonLogging = properties.JSONLogging
+			msgIsDifferent := (jErr.Message != properties.Message) && properties.Message != ""
+
+			if properties.Fatal {
 				if msgIsDifferent {
-					log.Fatalf("Additional error message: %s", message)
+					log.Fatalf("Additional error message: %s", properties.Message)
 				}
 
 				log.Fatal()
 			}
 
 			if msgIsDifferent {
-				log.Printf("Additional error message: %s", message)
+				log.Printf("Additional error message: %s", properties.Message)
 			}
 
 			return &jErr
 		}
 
 		jErr := jsonError{
-			Err:     err,
-			Message: message,
+			Err:         properties.Err,
+			Message:     properties.Message,
+			jsonLogging: properties.JSONLogging,
 		}
 
-		if fatal {
+		if properties.Fatal {
 			jErr.Panic()
 		}
 
@@ -49,7 +60,11 @@ func (e *jsonError) Panic() {
 }
 
 func (e jsonError) Error() string {
-	return ToJSONString(e)
+	if e.jsonLogging {
+		return ToJSONString(e)
+	}
+
+	return e.Message
 }
 
 func (e jsonError) ToJSON() (jsonBytes []byte) {
