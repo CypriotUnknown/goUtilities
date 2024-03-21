@@ -21,7 +21,7 @@ func JSONError(err error, message string, fatal bool) jsonError {
 }
 
 func (e *jsonError) Panic() {
-	log.Panicln(e.Error())
+	log.Fatalln(e.Error())
 }
 
 func (e jsonError) Error() string {
