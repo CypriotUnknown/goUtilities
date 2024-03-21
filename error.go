@@ -12,14 +12,14 @@ func JSONError(err error, message string) JsonError {
 	}
 }
 
-func (e *JsonError) Error() string {
+func (e JsonError) Error() string {
 	return ToJSONString(e)
 }
 
-func (e *JsonError) ToJSON() (jsonBytes []byte) {
+func (e JsonError) ToJSON() (jsonBytes []byte) {
 	return ToJSON(e)
 }
 
-func (e *JsonError) ToJSONString() (jsonString string) {
+func (e JsonError) ToJSONString() (jsonString string) {
 	return ToJSONString(e)
 }
