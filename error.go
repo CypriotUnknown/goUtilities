@@ -1,25 +1,25 @@
 package utilities
 
-type jsonError struct {
+type JsonError struct {
 	Err     error  `json:"err"`
 	Message string `json:"message"`
 }
 
-func JSONError(err error, message string) jsonError {
-	return jsonError{
+func JSONError(err error, message string) JsonError {
+	return JsonError{
 		Err:     err,
 		Message: message,
 	}
 }
 
-func (e *jsonError) Error() string {
+func (e *JsonError) Error() string {
 	return ToJSONString(e)
 }
 
-func (e *jsonError) ToJSON() (jsonBytes []byte) {
+func (e *JsonError) ToJSON() (jsonBytes []byte) {
 	return ToJSON(e)
 }
 
-func (e *jsonError) ToJSONString() (jsonString string) {
+func (e *JsonError) ToJSONString() (jsonString string) {
 	return ToJSONString(e)
 }
