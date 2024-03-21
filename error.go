@@ -9,6 +9,13 @@ type jsonError struct {
 
 func HandleError(err error, message string, fatal bool) *jsonError {
 	if err != nil {
+		if jErr, ok := err.(jsonError); ok {
+			if fatal {
+				log.Fatal()
+			}
+			return &jErr
+		}
+
 		jErr := jsonError{
 			Err:     err,
 			Message: message,
