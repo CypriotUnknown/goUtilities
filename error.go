@@ -7,17 +7,19 @@ type jsonError struct {
 	Message string `json:"message"`
 }
 
-func JSONError(err error, message string, fatal bool) jsonError {
-	jErr := jsonError{
-		Err:     err,
-		Message: message,
-	}
+func HandleError(err error, message string, fatal bool) {
+	if err != nil {
+		jErr := jsonError{
+			Err:     err,
+			Message: message,
+		}
 
-	if fatal {
-		jErr.Panic()
-	}
+		if fatal {
+			jErr.Panic()
+		}
 
-	return jErr
+		log.Println(jErr.Error())
+	}
 }
 
 func (e *jsonError) Panic() {

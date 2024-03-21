@@ -2,7 +2,6 @@ package utilities
 
 import (
 	"encoding/json"
-	"log"
 )
 
 type Jsonable interface {
@@ -17,9 +16,7 @@ func FromJSON[T Jsonable](data []byte, object *T) (err error) {
 
 func ToJSON(object any) (jsonBytes []byte) {
 	jsonBytes, err := json.MarshalIndent(object, "", "    ")
-	if err != nil {
-		log.Fatalln(err.Error())
-	}
+	HandleError(err, "could not convert object to JSON", true)
 
 	return jsonBytes
 }
