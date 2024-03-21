@@ -10,7 +10,7 @@ type jsonError struct {
 func HandleError(err error, message string, fatal bool) *jsonError {
 	if err != nil {
 		if jErr, ok := err.(jsonError); ok {
-			msgIsDifferent := jErr.Message != message
+			msgIsDifferent := (jErr.Message != message) && message != ""
 
 			if fatal {
 				if msgIsDifferent {
