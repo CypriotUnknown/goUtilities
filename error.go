@@ -4,15 +4,26 @@ import "log"
 
 type jsonError struct {
 	Err     error  `json:"err"`
-	Message string `json:"message"`
+	Message string `json:"message,omitempty"`
 }
 
 func HandleError(err error, message string, fatal bool) *jsonError {
 	if err != nil {
 		if jErr, ok := err.(jsonError); ok {
+			msgIsDifferent := jErr.Message != message
+
 			if fatal {
+				if msgIsDifferent {
+					log.Fatalf("Additional error message: %s", message)
+				}
+
 				log.Fatal()
 			}
+
+			if msgIsDifferent {
+				log.Printf("Additional error message: %s", message)
+			}
+
 			return &jErr
 		}
 
