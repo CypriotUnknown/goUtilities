@@ -1,23 +1,25 @@
 package utilities
 
-func FindInSlice[X any, T []X](slice T, condition func(object X) bool) *X {
+func FindInSlice[X any, T []X](slice T, condition func(object X) bool) (*X, *int) {
 
 	var returnObject X
+	var index int
 
 	success := false
 
-	for _, obj := range slice {
+	for i, obj := range slice {
 		if condition(obj) {
 			returnObject = obj
 			success = true
+			index = i
 			break
 		}
 	}
 
 	if success {
-		return &returnObject
+		return &returnObject, &index
 	} else {
-		return nil
+		return nil, nil
 	}
 }
 
