@@ -61,7 +61,14 @@ func (e *jsonError) Panic() {
 
 func (e jsonError) Error() string {
 	if e.jsonLogging {
+		if len(e.Message) == 0 {
+			e.Message = e.Err.Error()
+		}
 		return ToJSONString(e)
+	}
+
+	if len(e.Message) == 0 {
+		return e.Err.Error()
 	}
 
 	return e.Message
