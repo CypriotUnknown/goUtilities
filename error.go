@@ -106,7 +106,7 @@ func (e jsonError) Error() string {
 	})
 
 	message := strings.TrimSpace(
-		strings.Join(messages, ""),
+		strings.Join(messages, "\n"),
 	)
 
 	return message
