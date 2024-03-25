@@ -37,3 +37,15 @@ func ReduceSlice[R any, X any](array []X, resultObject *R, reduceFunction func(t
 		reduceFunction(*resultObject, v)
 	}
 }
+
+func FilterSlice[X any](array []X, filterFunction func(object X) bool) []X {
+	newArray := make([]X, 0)
+
+	for _, val := range array {
+		if filterFunction(val) {
+			newArray = append(newArray, val)
+		}
+	}
+
+	return newArray
+}
