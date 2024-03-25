@@ -11,39 +11,13 @@ func RemoveFromSlice[X any](slice []X, index int) []X {
 	return append(slice[:index], slice[index+1:]...)
 }
 
-func FindInSlice2[X any](slice []X, condition func(object X) bool) int {
-	// Iterate over the slice
+func FindInSlice[X any](slice []X, condition func(object X) bool) int {
 	for i, value := range slice {
-		// If the current element matches the target value, return its index
 		if condition(value) {
 			return i
 		}
 	}
-	// If the target value is not found, return -1
 	return -1
-}
-
-func FindInSlice[X any, T []X](slice *T, condition func(object *X) bool) (*X, *int) {
-
-	var returnObject X
-	var index int
-
-	success := false
-
-	for i, obj := range *slice {
-		if condition(&obj) {
-			returnObject = obj
-			success = true
-			index = i
-			break
-		}
-	}
-
-	if success {
-		return &returnObject, &index
-	} else {
-		return nil, nil
-	}
 }
 
 func MapSlice[X any, R any](array []X, mapFunction func(object X, index int) R) []R {
