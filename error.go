@@ -1,9 +1,13 @@
 package utilities
 
-import "log"
+import (
+	"fmt"
+	"log"
+	"strings"
+)
 
 type jsonError struct {
-	Err         error  `json:"err"`
+	Err         error  `json:"-"`
 	Message     string `json:"message,omitempty"`
 	jsonLogging bool   `json:"-"`
 }
@@ -13,6 +17,19 @@ type ErrorProperties struct {
 	Message     string `json:"message"`
 	Fatal       bool   `json:"fatal"`
 	JSONLogging bool   `json:"json_logging"`
+}
+
+type jsonErrorStringTemplate struct {
+	Error   string `json:"error,omitempty"`
+	Message string `json:"message,omitempty"`
+}
+
+func (j *jsonErrorStringTemplate) ToJSON() (jsonBytes []byte) {
+	return ToJSON(j)
+}
+
+func (j *jsonErrorStringTemplate) ToJSONString() (jsonString string) {
+	return ToJSONString(j)
 }
 
 func HandleError(properties ErrorProperties) *jsonError {
@@ -61,17 +78,38 @@ func (e *jsonError) Panic() {
 
 func (e jsonError) Error() string {
 	if e.jsonLogging {
-		if len(e.Message) == 0 {
-			e.Message = e.Err.Error()
+		x := jsonErrorStringTemplate{
+			Error:   e.Err.Error(),
+			Message: e.Message,
 		}
-		return ToJSONString(e)
+
+		return x.ToJSONString()
 	}
 
-	if len(e.Message) == 0 {
-		return e.Err.Error()
+	messages := []string{
+		e.Err.Error(),
+		e.Message,
 	}
 
-	return e.Message
+	messages = MapSlice(messages, func(m string, i int) string {
+		if i == 0 && len(m) > 0 {
+			return fmt.Sprintf("Error: %s", m)
+		} else if i == 1 && len(m) > 0 {
+			return fmt.Sprintf("Message: %s", m)
+		}
+
+		return ""
+	})
+
+	messages = FilterSlice(messages, func(m string, _ int) bool {
+		return len(strings.TrimSpace(m)) > 0
+	})
+
+	message := strings.TrimSpace(
+		strings.Join(messages, ""),
+	)
+
+	return message
 }
 
 func (e jsonError) ToJSON() (jsonBytes []byte) {
