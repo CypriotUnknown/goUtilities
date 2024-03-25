@@ -7,18 +7,19 @@ func RemoveFromSlice[X any](slice []X, index int) []X {
 	}
 
 	// Create a new slice by concatenating the elements before and after the index
+
 	return append(slice[:index], slice[index+1:]...)
 }
 
-func FindInSlice[X any, T []X](slice T, condition func(object X) bool) (*X, *int) {
+func FindInSlice[X any, T []X](slice *T, condition func(object *X) bool) (*X, *int) {
 
 	var returnObject X
 	var index int
 
 	success := false
 
-	for i, obj := range slice {
-		if condition(obj) {
+	for i, obj := range *slice {
+		if condition(&obj) {
 			returnObject = obj
 			success = true
 			index = i
