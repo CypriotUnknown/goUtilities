@@ -1,5 +1,15 @@
 package utilities
 
+func RemoveFromSlice[X any](slice []X, index int) []X {
+	// Check if the index is valid
+	if index < 0 || index >= len(slice) {
+		return slice
+	}
+
+	// Create a new slice by concatenating the elements before and after the index
+	return append(slice[:index], slice[index+1:]...)
+}
+
 func FindInSlice[X any, T []X](slice T, condition func(object X) bool) (*X, *int) {
 
 	var returnObject X
