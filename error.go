@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"strings"
+	"time"
 )
 
 type jsonError struct {
@@ -44,8 +45,9 @@ func HandleError(properties ErrorProperties) *jsonError {
 					log.Fatalf("Additional error message: %s", properties.Message)
 				}
 
-				log.Println("Message: ", jErr.Message)
-				log.Fatalln(jErr.Err.Error())
+				log.Println(jErr.ToJSONString())
+				time.Sleep(time.Second * 1)
+				log.Fatalln()
 			}
 
 			if msgIsDifferent {
@@ -62,7 +64,10 @@ func HandleError(properties ErrorProperties) *jsonError {
 		}
 
 		if properties.Fatal {
-			log.Fatalln(jErr.Message)
+			log.Println("here...")
+			log.Println(jErr.ToJSONString())
+			time.Sleep(time.Second * 1)
+			log.Fatal()
 		}
 
 		log.Println(jErr.Error())
