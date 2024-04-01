@@ -8,9 +8,11 @@ import (
 )
 
 type jsonError struct {
-	Err         error  `json:"-"`
-	Message     string `json:"message,omitempty"`
-	jsonLogging bool   `json:"-"`
+	Err               error  `json:"-"`
+	Message           string `json:"message,omitempty"`
+	AdditionalMessage string `json:"additional_message,omitempty"`
+	jsonLogging       bool   `json:"-"`
+	Fatal             bool   `json:"fatal"`
 }
 
 type ErrorProperties struct {
@@ -42,14 +44,15 @@ func HandleError(properties ErrorProperties) *jsonError {
 
 			if properties.Fatal {
 				if msgIsDifferent {
-					log.Panic(properties.Message)
+					jErr.AdditionalMessage = properties.Message
+					log.Panic()
 				}
 
-				jErr.Panic("")
+				jErr.Panic()
 			}
 
 			if msgIsDifferent {
-				log.Printf("Additional error message: %s", properties.Message)
+				jErr.AdditionalMessage = properties.Message
 			}
 
 			return &jErr
@@ -59,10 +62,11 @@ func HandleError(properties ErrorProperties) *jsonError {
 			Err:         properties.Err,
 			Message:     properties.Message,
 			jsonLogging: properties.JSONLogging,
+			Fatal:       properties.Fatal,
 		}
 
 		if properties.Fatal {
-			jErr.Panic("")
+			jErr.Panic()
 		}
 
 		log.Println(jErr.Error())
@@ -73,11 +77,8 @@ func HandleError(properties ErrorProperties) *jsonError {
 	return nil
 }
 
-func (e *jsonError) Panic(message string) {
-	log.Println("FATAL ERROR !")
-	if message != "" {
-		log.Printf("Additional error message: %s\n", message)
-	}
+func (e *jsonError) Panic() {
+	e.jsonLogging = true
 	log.Println(e.Error())
 	time.Sleep(time.Second * 1)
 	log.Fatal()
