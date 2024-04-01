@@ -25,6 +25,7 @@ type ErrorProperties struct {
 type jsonErrorStringTemplate struct {
 	Error   string `json:"error,omitempty"`
 	Message string `json:"message,omitempty"`
+	Fatal   bool   `json:"fatal"`
 }
 
 func (j *jsonErrorStringTemplate) ToJSON() (jsonBytes []byte) {
@@ -89,6 +90,7 @@ func (e jsonError) Error() string {
 		x := jsonErrorStringTemplate{
 			Error:   e.Err.Error(),
 			Message: e.Message,
+			Fatal:   e.Fatal,
 		}
 
 		return x.ToJSONString()
@@ -97,6 +99,7 @@ func (e jsonError) Error() string {
 	messages := []string{
 		e.Err.Error(),
 		e.Message,
+		fmt.Sprintf("Fatal: %v", e.Fatal),
 	}
 
 	messages = MapSlice(messages, func(m string, i int) string {
@@ -104,6 +107,8 @@ func (e jsonError) Error() string {
 			return fmt.Sprintf("Error: %s", m)
 		} else if i == 1 && len(m) > 0 {
 			return fmt.Sprintf("Message: %s", m)
+		} else if i == 2 {
+			return m
 		}
 
 		return ""
