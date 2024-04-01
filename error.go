@@ -44,7 +44,7 @@ func HandleError(properties ErrorProperties) *jsonError {
 					log.Fatalf("Additional error message: %s", properties.Message)
 				}
 
-				log.Fatal()
+				log.Fatal(properties.Message)
 			}
 
 			if msgIsDifferent {
@@ -61,7 +61,7 @@ func HandleError(properties ErrorProperties) *jsonError {
 		}
 
 		if properties.Fatal {
-			jErr.Panic()
+			log.Fatalln(jErr.Message)
 		}
 
 		log.Println(jErr.Error())
