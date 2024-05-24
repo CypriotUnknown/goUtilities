@@ -16,11 +16,15 @@ func FromJSON[T Jsonable](data []byte, object *T) (err error) {
 
 func ToJSON(object any) (jsonBytes []byte) {
 	jsonBytes, err := json.MarshalIndent(object, "", "    ")
-	HandleError(ErrorProperties{
-		Err:     err,
-		Message: "could not convert object to JSON",
-		Fatal:   true,
-	})
+	if err != nil {
+		HandleError(ErrorProperties{
+			Err:     err,
+			Message: "could not convert object to JSON",
+			Fatal:   true,
+		})
+
+		return nil
+	}
 
 	return jsonBytes
 }
