@@ -30,5 +30,10 @@ func ToJSON(object any) (jsonBytes []byte) {
 }
 
 func ToJSONString(object Jsonable) string {
-	return string(object.ToJSON())
+	jsonBytes := object.ToJSON()
+	if jsonBytes != nil {
+		return string(jsonBytes)
+	}
+
+	return ""
 }
