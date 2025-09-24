@@ -102,7 +102,7 @@ func (e jsonError) Error() string {
 		fmt.Sprintf("Fatal: %v", e.Fatal),
 	}
 
-	messages = MapSlice(messages, func(m string, i int) string {
+	messages = Map(messages, func(m string, i int) string {
 		if i == 0 && len(m) > 0 {
 			return fmt.Sprintf("Error: %s", m)
 		} else if i == 1 && len(m) > 0 {
@@ -114,7 +114,7 @@ func (e jsonError) Error() string {
 		return ""
 	})
 
-	messages = FilterSlice(messages, func(m string, _ int) bool {
+	messages = Filter(messages, func(m string, _ int) bool {
 		return len(strings.TrimSpace(m)) > 0
 	})
 

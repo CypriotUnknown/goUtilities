@@ -1,5 +1,7 @@
 package utilities
 
+import "strings"
+
 func RemoveFromSlice[X any](slice []X, index int) []X {
 	// Check if the index is valid
 	if index < 0 || index >= len(slice) {
@@ -20,31 +22,48 @@ func FindInSlice[X any](slice []X, condition func(object X) bool) int {
 	return -1
 }
 
-func MapSlice[X any, R any](array []X, mapFunction func(object X, index int) R) []R {
-	newArray := make([]R, 0)
-
-	for i, v := range array {
-		newArray = append(newArray, mapFunction(v, i))
+func Map[T any, R any](input []T, f func(v T, i int) R) []R {
+	out := make([]R, len(input))
+	for i, v := range input {
+		out[i] = f(v, i)
 	}
-
-	return newArray
+	return out
 }
 
-func ReduceSlice[R any, X any](array []X, resultObject *R, reduceFunction func(totalObject R, currentObject X)) {
-
-	for _, v := range array {
-		reduceFunction(*resultObject, v)
-	}
-}
-
-func FilterSlice[X any](array []X, filterFunction func(object X, index int) bool) []X {
-	newArray := make([]X, 0)
-
-	for i, val := range array {
-		if filterFunction(val, i) {
-			newArray = append(newArray, val)
+func Filter[T any](input []T, f func(v T, i int) bool) []T {
+	out := make([]T, 0)
+	for i, v := range input {
+		if f(v, i) {
+			out = append(out, v)
 		}
 	}
+	return out
+}
 
-	return newArray
+func Reduce[T any, R any](input []T, init R, reducer func(R, T) R) R {
+	acc := init
+	for _, v := range input {
+		acc = reducer(acc, v)
+	}
+	return acc
+}
+
+func WalkMap(m map[string]any, path []string, cb func(path []string, key string, value any)) {
+	for k, v := range m {
+		cb(path, k, v)
+
+		// Recurse into nested maps only
+		if nested, ok := v.(map[string]any); ok {
+			WalkMap(nested, append(path, k), cb)
+		}
+	}
+}
+
+func RemoveLastOccurrence(s, substr string) string {
+	idx := strings.LastIndex(s, substr)
+	if idx == -1 {
+		return s
+	}
+
+	return s[:idx] + s[idx+len(substr):]
 }
